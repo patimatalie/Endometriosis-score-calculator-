@@ -1,1077 +1,411 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>НГЭ SCORE — Прогностическая шкала</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0d0f14;
-    --surface: #13161e;
-    --surface2: #1a1e29;
-    --border: #252a38;
-    --text: #e8eaf0;
-    --text-dim: #6b7280;
-    --text-mid: #9ca3af;
-    --green: #22c55e;
-    --green-dim: #14532d;
-    --green-bg: #0f2a1a;
-    --yellow: #eab308;
-    --yellow-dim: #713f12;
-    --yellow-bg: #2a1f0a;
-    --red: #ef4444;
-    --red-dim: #7f1d1d;
-    --red-bg: #2a0f0f;
-    --blue: #60a5fa;
-    --blue-dim: #1e3a5f;
-    --accent: #7c6af5;
-    --accent-light: #a89ef8;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Instrument Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Background grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 48px 48px;
-    opacity: 0.3;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
-
-  /* Header */
-  .header {
-    margin-bottom: 48px;
-    animation: fadeDown 0.6s ease both;
-  }
-
-  .header-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--accent-light);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .header-tag::before {
-    content: '';
-    width: 24px;
-    height: 1px;
-    background: var(--accent-light);
-  }
-
-  h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(32px, 5vw, 52px);
-    line-height: 1.1;
-    color: var(--text);
-    margin-bottom: 16px;
-  }
-
-  h1 em {
-    font-style: italic;
-    color: var(--accent-light);
-  }
-
-  .header-sub {
-    font-size: 15px;
-    color: var(--text-mid);
-    line-height: 1.6;
-    max-width: 560px;
-  }
-
-  /* Filter banner */
-  .filter-banner {
-    background: linear-gradient(135deg, #1a1520, #1a1220);
-    border: 1px solid #3d2a5a;
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 32px;
-    animation: fadeDown 0.6s 0.1s ease both;
-  }
-
-  .filter-banner-title {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #c084fc;
-    margin-bottom: 12px;
-  }
-
-  .filter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 8px;
-  }
-
-  .filter-item {
-    font-size: 13px;
-    color: var(--text-mid);
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    line-height: 1.4;
-  }
-
-  .filter-item::before {
-    content: '→';
-    color: #c084fc;
-    flex-shrink: 0;
-    font-family: 'DM Mono', monospace;
-  }
-
-  /* Form sections */
-  .section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 16px;
-    animation: fadeUp 0.5s ease both;
-    transition: border-color 0.2s;
-  }
-
-  .section:hover {
-    border-color: #2e3548;
-  }
-
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .section-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    width: 20px;
-    flex-shrink: 0;
-  }
-
-  .section-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .section-hint {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-left: auto;
-    font-family: 'DM Mono', monospace;
-  }
-
-  /* Age input */
-  .age-input-wrap {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  input[type="number"] {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 28px;
-    font-weight: 500;
-    width: 120px;
-    padding: 12px 16px;
-    text-align: center;
-    outline: none;
-    transition: border-color 0.2s, background 0.2s;
-    -moz-appearance: textfield;
-  }
-
-  input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
-
-  input[type="number"]:focus {
-    border-color: var(--accent);
-    background: #161924;
-  }
-
-  .age-label {
-    font-size: 13px;
-    color: var(--text-dim);
-  }
-
-  /* Radio options */
-  .options {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .option {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 12px 16px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-  }
-
-  .option:hover {
-    border-color: #3a4060;
-    background: #1e2230;
-  }
-
-  .option input[type="radio"] { display: none; }
-
-  .option.selected {
-    border-color: var(--accent);
-    background: #1a1830;
-  }
-
-  .option-code {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--accent);
-    width: 18px;
-    flex-shrink: 0;
-  }
-
-  .option-text {
-    font-size: 14px;
-    color: var(--text-mid);
-    flex: 1;
-    transition: color 0.15s;
-  }
-
-  .option.selected .option-text {
-    color: var(--text);
-  }
-
-  .option-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    flex-shrink: 0;
-    transition: all 0.15s;
-  }
-
-  .option.selected .option-dot {
-    background: var(--accent);
-    border-color: var(--accent);
-    box-shadow: 0 0 8px var(--accent);
-  }
-
-  /* Pain checkboxes */
-  .pain-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 8px;
-  }
-
-  .pain-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .pain-item:hover {
-    border-color: #3a4060;
-  }
-
-  .pain-item.checked {
-    border-color: var(--accent);
-    background: #1a1830;
-  }
-
-  .pain-item input { display: none; }
-
-  .pain-check {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    border: 1.5px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.15s;
-    font-size: 10px;
-  }
-
-  .pain-item.checked .pain-check {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-  }
-
-  .pain-text {
-    font-size: 13px;
-    color: var(--text-mid);
-    transition: color 0.15s;
-  }
-
-  .pain-item.checked .pain-text {
-    color: var(--text);
-  }
-
-  .pain-counter {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 10px;
-  }
-
-  .pain-counter span {
-    color: var(--accent-light);
-    font-weight: 500;
-  }
-
-  /* Calculate button */
-  .calc-btn {
-    width: 100%;
-    padding: 18px;
-    background: var(--accent);
-    border: none;
-    border-radius: 14px;
-    color: white;
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp 0.5s 0.4s ease both;
-  }
-
-  .calc-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .calc-btn:hover {
-    background: #6d5ce8;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(124, 106, 245, 0.35);
-  }
-
-  .calc-btn:hover::before { opacity: 1; }
-  .calc-btn:active { transform: translateY(0); }
-
-  /* Result card */
-  .result {
-    display: none;
-    margin-top: 24px;
-    animation: resultReveal 0.5s ease both;
-  }
-
-  .result.visible { display: block; }
-
-  .result-card {
-    border-radius: 20px;
-    padding: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .result-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.06;
-    background: repeating-linear-gradient(
-      -45deg,
-      currentColor 0,
-      currentColor 1px,
-      transparent 0,
-      transparent 50%
-    );
-    background-size: 12px 12px;
-  }
-
-  .result-card.zone1 {
-    background: var(--green-bg);
-    border: 1px solid var(--green);
-    color: var(--green);
-  }
-
-  .result-card.zone2 {
-    background: var(--yellow-bg);
-    border: 1px solid var(--yellow);
-    color: var(--yellow);
-  }
-
-  .result-card.zone3 {
-    background: var(--red-bg);
-    border: 1px solid var(--red);
-    color: var(--red);
-  }
-
-  .result-card.filter-triggered {
-    background: #1a1520;
-    border: 1px solid #a855f7;
-    color: #a855f7;
-  }
-
-  .result-inner {
-    position: relative;
-    z-index: 1;
-  }
-
-  .result-zone-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    opacity: 0.8;
-    margin-bottom: 8px;
-  }
-
-  .result-score {
-    font-family: 'DM Serif Display', serif;
-    font-size: 72px;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .result-score-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    opacity: 0.6;
-    margin-bottom: 24px;
-  }
-
-  .result-divider {
-    height: 1px;
-    background: currentColor;
-    opacity: 0.2;
-    margin: 20px 0;
-  }
-
-  .result-zone-name {
-    font-size: 22px;
-    font-weight: 600;
-    font-family: 'DM Serif Display', serif;
-    margin-bottom: 12px;
-  }
-
-  .result-recommendation {
-    font-size: 15px;
-    line-height: 1.6;
-    opacity: 0.85;
-    color: var(--text);
-    margin-bottom: 20px;
-  }
-
-  /* Input summary */
-  .result-summary {
-    background: rgba(0,0,0,0.25);
-    border-radius: 10px;
-    padding: 16px 20px;
-    margin-top: 20px;
-  }
-
-  .result-summary-title {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 12px;
-  }
-
-  .summary-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  .summary-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .summary-key {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--text-dim);
-  }
-
-  .summary-val {
-    font-family: 'DM Mono', monospace;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  /* Formula breakdown */
-  .formula-breakdown {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-top: 12px;
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--text-mid);
-    line-height: 1.8;
-  }
-
-  .formula-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .formula-line.total {
-    border-top: 1px solid var(--border);
-    margin-top: 8px;
-    padding-top: 8px;
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  .formula-val {
-    color: var(--accent-light);
-  }
-
-  .formula-val.negative { color: var(--text-dim); }
-
-  /* Filter warning */
-  .filter-warning {
-    background: rgba(168, 85, 247, 0.1);
-    border: 1px solid rgba(168, 85, 247, 0.4);
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-top: 16px;
-    font-size: 13px;
-    color: #d8b4fe;
-    line-height: 1.5;
-  }
-
-  .filter-warning strong {
-    color: #e9d5ff;
-    display: block;
-    margin-bottom: 4px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  /* Reset button */
-  .reset-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 14px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text-dim);
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 16px;
-    transition: all 0.2s;
-  }
-
-  .reset-btn:hover {
-    border-color: #3a4060;
-    color: var(--text-mid);
-  }
-
-  /* Footer */
-  .footer {
-    margin-top: 48px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 1.6;
-    animation: fadeUp 0.5s 0.5s ease both;
-  }
-
-  .footer strong {
-    color: var(--text-mid);
-  }
-
-  /* Animations */
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes resultReveal {
-    from { opacity: 0; transform: scale(0.97) translateY(12px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  .section:nth-child(1) { animation-delay: 0.1s; }
-  .section:nth-child(2) { animation-delay: 0.15s; }
-  .section:nth-child(3) { animation-delay: 0.2s; }
-  .section:nth-child(4) { animation-delay: 0.25s; }
-  .section:nth-child(5) { animation-delay: 0.3s; }
-  .section:nth-child(6) { animation-delay: 0.35s; }
-
-  @media (max-width: 600px) {
-    .summary-grid { grid-template-columns: repeat(2, 1fr); }
-    .filter-grid { grid-template-columns: 1fr; }
-    .result-score { font-size: 56px; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор SCORE (эндометриоз)</title>
+    <!-- Шрифты (ваши) -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Ваши глобальные стили (можно оставить, они не мешают) -->
+    <style>
+        :root {
+            --bg: #0d0f14;
+            --surface: #13161e;
+            --surface2: #1a1e29;
+            --border: #252a38;
+            --text: #e8eaf0;
+            --text-dim: #6b7280;
+            --text-mid: #9ca3af;
+            --green: #22c55e;
+            --green-dim: #14532d;
+            --green-bg: #0f2a1a;
+            --yellow: #eab308;
+            --yellow-dim: #713f12;
+            --yellow-bg: #2a1f0a;
+            --red: #ef4444;
+            --red-dim: #7f1d1d;
+            --red-bg: #2a0f0f;
+            --blue: #60a5fa;
+            --blue-dim: #1e3a5f;
+            --accent: #7c6af5;
+            --accent-light: #a89ef8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Instrument Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 48px 48px; opacity: 0.3; pointer-events: none; z-index: 0; }
+        .container { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+        /* Остальные ваши стили можно оставить, но компонент использует inline-стили из объекта S, так что они не понадобятся */
+    </style>
+    <!-- Подключение React, ReactDOM и Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-<div class="container">
+    <div id="root"></div>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="header-tag">Прогностическая шкала · НГЭ</div>
-    <h1>Калькулятор<br><em>SCORE</em></h1>
-    <p class="header-sub">Инструмент стратификации тактики лечения наружного генитального эндометриоза на основании данных МРТ и клинической картины.</p>
-  </div>
+    <script type="text/babel">
+        const { useState } = React;
 
-  <!-- Filter banner -->
-  <div class="filter-banner">
-    <div class="filter-banner-title">⚠ Предварительный фильтр — операция вне зависимости от SCORE</div>
-    <div class="filter-grid">
-      <div class="filter-item">Эндометриома ≥ 4 см</div>
-      <div class="filter-item">Бесплодие, ассоц. с эндометриозом</div>
-      <div class="filter-item">Инвазия стенки кишки (Retrosigmoid ≥ 2)</div>
-      <div class="filter-item">Неэффективность предыдущей терапии</div>
-      <div class="filter-item">Подозрение на малигнизацию</div>
-    </div>
-  </div>
+        // Данные групп (полностью из вашего исходного кода)
+        const GROUPS = {
+            ovary: {
+                title: "Поражение яичников (Sum_Ovary)",
+                num: "02",
+                options: [
+                    { val: 0, label: "Эндометриомы отсутствуют" },
+                    { val: 1, label: "Односторонняя эндометриома < 3 см" },
+                    { val: 2, label: "Односторонняя эндометриома 3–5 см" },
+                    { val: 3, label: "Односторонняя эндометриома > 5 см" },
+                    { val: 4, label: "Двусторонние эндометриомы до 3 см" },
+                    { val: 5, label: "Двусторонние эндометриомы, хотя бы одна ≥ 3 см" },
+                    { val: 6, label: "Функциональное образование яичника" },
+                ],
+            },
+            tubes: {
+                title: "Маточные трубы (Sum_OT)",
+                num: "03",
+                options: [
+                    { val: 0, label: "Трубы не изменены" },
+                    { val: 1, label: "Тубоовариальное образование (одностороннее)" },
+                    { val: 2, label: "Тубоовариальное образование двустороннее / Гематосальпинкс" },
+                    { val: 3, label: "ТОО двустороннее + гематосальпинкс" },
+                    { val: 4, label: "Гематосальпинкс двусторонний" },
+                ],
+            },
+            rectosigmoid: {
+                title: "Ректосигмоидный отдел (Retrosigmoid)",
+                num: "05",
+                options: [
+                    { val: 0, label: "Очаг отсутствует / не фиксирует кишку" },
+                    { val: 1, label: "Очаг фиксирует кишку без инвазии стенки" },
+                    { val: 2, label: "Прорастание до мышечного слоя включительно" },
+                    { val: 3, label: "Инвазия слизистого / подслизистого слоя" },
+                ],
+            },
+            pelvis: {
+                title: "Распространение по стенкам таза (Pelvis)",
+                num: "06",
+                options: [
+                    { val: 0, label: "Распространения нет" },
+                    { val: 1, label: "Имеется распространение по стенкам таза" },
+                ],
+            },
+        };
 
-  <!-- Form -->
-  <div id="form">
+        const PAIN_LABELS = ["Дисменорея", "Диспареуния", "Хроническая тазовая боль", "Дисхезия", "Дизурия"];
 
-    <!-- Age -->
-    <div class="section">
-      <div class="section-header">
-        <span class="section-num">01</span>
-        <span class="section-title">Возраст пациентки</span>
-        <span class="section-hint">лет</span>
-      </div>
-      <div class="age-input-wrap">
-        <input type="number" id="age" min="18" max="60" placeholder="35" value="">
-        <span class="age-label">от 18 до 60 лет</span>
-      </div>
-    </div>
+        // CSS-строка, которая будет вставлена в <style> внутри компонента
+        const css = `
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body { background: #0d0f1a; }
+            :root {
+                --bg: #0d0f1a; --surface: #141622; --card: #1a1d2e;
+                --border: #252840; --accent: #6c63ff; --accent2: #a78bfa;
+                --text: #e2e4f0; --muted: #6b7090; --green: #34d399;
+                --yellow: #fbbf24; --red: #f87171;
+            }
+        `;
 
-    <!-- Ovary -->
-    <div class="section">
-      <div class="section-header">
-        <span class="section-num">02</span>
-        <span class="section-title">Поражение яичников (Sum_Ovary)</span>
-      </div>
-      <div class="options" id="ovary">
-        <div class="option" data-group="ovary" data-val="0">
-          
-          <span class="option-code">0</span>
-          <span class="option-text">Эндометриомы отсутствуют</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="ovary" data-val="1">
-          
-          <span class="option-code">1</span>
-          <span class="option-text">Односторонняя эндометриома &lt; 3 см</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="ovary" data-val="2">
-          
-          <span class="option-code">2</span>
-          <span class="option-text">Односторонняя эндометриома 3–5 см</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="ovary" data-val="3">
-          
-          <span class="option-code">3</span>
-          <span class="option-text">Односторонняя эндометриома &gt; 5 см</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="ovary" data-val="4">
-          
-          <span class="option-code">4</span>
-          <span class="option-text">Двусторонние эндометриомы до 3 см</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="ovary" data-val="5">
-          
-          <span class="option-code">5</span>
-          <span class="option-text">Двусторонние эндометриомы, хотя бы одна ≥ 3 см</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="ovary" data-val="6">
-          
-          <span class="option-code">6</span>
-          <span class="option-text">Функциональное образование яичника</span>
-          <span class="option-dot"></span>
-        </div>
-      </div>
-    </div>
+        // Компонент App (полностью из вашего исходного кода, но без export default)
+        function App() {
+            const [age, setAge] = useState("");
+            const [selected, setSelected] = useState({ ovary: null, tubes: null, rectosigmoid: null, pelvis: null });
+            const [pain, setPain] = useState([false, false, false, false, false]);
+            const [result, setResult] = useState(null);
+            const [error, setError] = useState("");
 
-    <!-- Tubes -->
-    <div class="section">
-      <div class="section-header">
-        <span class="section-num">03</span>
-        <span class="section-title">Маточные трубы (Sum_OT)</span>
-      </div>
-      <div class="options" id="tubes">
-        <div class="option" data-group="tubes" data-val="0">
-          
-          <span class="option-code">0</span>
-          <span class="option-text">Трубы не изменены</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="tubes" data-val="1">
-          
-          <span class="option-code">1</span>
-          <span class="option-text">Тубоовариальное образование (одностороннее)</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="tubes" data-val="2">
-          
-          <span class="option-code">2</span>
-          <span class="option-text">Тубоовариальное образование (двустороннее) / Гематосальпинкс</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="tubes" data-val="3">
-          
-          <span class="option-code">3</span>
-          <span class="option-text">ТОО двустороннее + гематосальпинкс</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="tubes" data-val="4">
-          
-          <span class="option-code">4</span>
-          <span class="option-text">Гематосальпинкс двусторонний</span>
-          <span class="option-dot"></span>
-        </div>
-      </div>
-    </div>
+            const togglePain = (i) => {
+                const next = [...pain];
+                next[i] = !next[i];
+                setPain(next);
+            };
 
-    <!-- Pain -->
-    <div class="section">
-      <div class="section-header">
-        <span class="section-num">04</span>
-        <span class="section-title">Болевой синдром (Pain_quantitative)</span>
-      </div>
-      <div class="pain-grid" id="pain-grid">
-        <div class="pain-item">
-          <span class="pain-check">✓</span>
-          <span class="pain-text">Дисменорея</span>
-        </div>
-        <div class="pain-item">
-          <span class="pain-check">✓</span>
-          <span class="pain-text">Диспареуния</span>
-        </div>
-        <div class="pain-item">
-          <span class="pain-check">✓</span>
-          <span class="pain-text">Хроническая тазовая боль</span>
-        </div>
-        <div class="pain-item">
-          <span class="pain-check">✓</span>
-          <span class="pain-text">Дисхезия</span>
-        </div>
-        <div class="pain-item">
-          <span class="pain-check">✓</span>
-          <span class="pain-text">Дизурия</span>
-        </div>
-      </div>
-      <div class="pain-counter">Выбрано симптомов: <span id="pain-count">0</span> из 5</div>
-    </div>
+            const select = (group, val) => {
+                setSelected(prev => ({ ...prev, [group]: val }));
+                setResult(null);
+            };
 
-    <!-- Rectosigmoid -->
-    <div class="section">
-      <div class="section-header">
-        <span class="section-num">05</span>
-        <span class="section-title">Ректосигмоидный отдел (Retrosigmoid)</span>
-      </div>
-      <div class="options" id="rectosigmoid">
-        <div class="option" data-group="rectosigmoid" data-val="0">
-          
-          <span class="option-code">0</span>
-          <span class="option-text">Очаг отсутствует / не фиксирует кишку</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="rectosigmoid" data-val="1">
-          
-          <span class="option-code">1</span>
-          <span class="option-text">Очаг фиксирует кишку без инвазии стенки</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="rectosigmoid" data-val="2">
-          
-          <span class="option-code">2</span>
-          <span class="option-text">Прорастание до мышечного слоя включительно</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="rectosigmoid" data-val="3">
-          
-          <span class="option-code">3</span>
-          <span class="option-text">Инвазия слизистого / подслизистого слоя</span>
-          <span class="option-dot"></span>
-        </div>
-      </div>
-    </div>
+            const painCount = pain.filter(Boolean).length;
 
-    <!-- Pelvis -->
-    <div class="section">
-      <div class="section-header">
-        <span class="section-num">06</span>
-        <span class="section-title">Распространение по стенкам таза (Pelvis)</span>
-      </div>
-      <div class="options" id="pelvis">
-        <div class="option" data-group="pelvis" data-val="0">
-          
-          <span class="option-code">0</span>
-          <span class="option-text">Распространения нет</span>
-          <span class="option-dot"></span>
-        </div>
-        <div class="option" data-group="pelvis" data-val="1">
-          
-          <span class="option-code">1</span>
-          <span class="option-text">Имеется распространение по стенкам таза</span>
-          <span class="option-dot"></span>
-        </div>
-      </div>
-    </div>
+            const calculate = () => {
+                const a = parseInt(age, 10);
+                if (!a || a < 18 || a > 60) { setError("Укажите корректный возраст (18–60 лет)"); return; }
+                if (selected.ovary === null) { setError("Выберите вариант для яичников"); return; }
+                if (selected.tubes === null) { setError("Выберите вариант для маточных труб"); return; }
+                if (selected.rectosigmoid === null) { setError("Выберите вариант для ректосигмоидного отдела"); return; }
+                if (selected.pelvis === null) { setError("Выберите вариант для стенок таза"); return; }
+                setError("");
 
-    <button class="calc-btn" id="calcBtn">Рассчитать SCORE →</button>
-  </div>
+                const score = -24 + 8 * selected.ovary + 39 * selected.tubes + (-1) * a + 15 * painCount + 17 * selected.rectosigmoid + 11 * selected.pelvis;
+                const zone = score < 0 ? 1 : score <= 15 ? 2 : 3;
+                const filters = [];
+                if (selected.ovary === 3) filters.push("Односторонняя эндометриома > 5 см");
+                if (selected.ovary === 5) filters.push("Двусторонние эндометриомы ≥ 3 см");
+                if (selected.rectosigmoid >= 2) filters.push("Инвазия стенки кишки (Retrosigmoid ≥ 2)");
 
-  <!-- Result -->
-  <div class="result" id="result">
-    <div class="result-card" id="result-card">
-      <div class="result-inner">
-        <div class="result-zone-label" id="result-zone-label">ЗОНА</div>
-        <div class="result-score" id="result-score">0</div>
-        <div class="result-score-label">SCORE</div>
-        <div class="result-divider"></div>
-        <div class="result-zone-name" id="result-zone-name"></div>
-        <div class="result-recommendation" id="result-recommendation"></div>
+                setResult({ score, zone, filters, age: a, pain: painCount, vals: { ...selected } });
+            };
 
-        <div class="result-summary">
-          <div class="result-summary-title">Введённые данные</div>
-          <div class="summary-grid" id="summary-grid"></div>
-        </div>
+            const reset = () => {
+                setAge(""); setSelected({ ovary: null, tubes: null, rectosigmoid: null, pelvis: null });
+                setPain([false, false, false, false, false]); setResult(null); setError("");
+            };
 
-        <div class="formula-breakdown" id="formula-breakdown"></div>
+            const fmt = (v) => (v >= 0 ? "+" : "") + v;
 
-        <div class="filter-warning" id="filter-warning" style="display:none">
-          <strong>⚠ Проверьте предварительный фильтр</strong>
-          <span id="filter-warning-text"></span>
-        </div>
-      </div>
-    </div>
-    <button class="reset-btn" id="resetBtn">↺ Новый расчёт</button>
-  </div>
+            const zoneData = result ? (result.zone === 1
+                ? { label: "ЗОНА I — НИЗКИЙ РИСК", color: "#34d399", bg: "rgba(52,211,153,.1)", border: "rgba(52,211,153,.3)",
+                    name: "Консервативная терапия",
+                    rec: "Рекомендована гормональная терапия прогестагенами. Динамическое МРТ-наблюдение через 6 месяцев. При нарастании симптоматики или росте очагов — пересмотр тактики." }
+                : result.zone === 2
+                ? { label: "ЗОНА II — СРЕДНИЙ РИСК", color: "#fbbf24", bg: "rgba(251,191,36,.08)", border: "rgba(251,191,36,.3)",
+                    name: "Индивидуальное решение",
+                    rec: "Тактика определяется индивидуально. Необходимо учитывать показатели овариального резерва (АМГ, АФЧ), репродуктивные планы пациентки и динамику симптомов. Пробная консервативная терапия 3–6 месяцев с повторной оценкой." }
+                : { label: "ЗОНА III — ВЫСОКИЙ РИСК", color: "#f87171", bg: "rgba(248,113,113,.1)", border: "rgba(248,113,113,.3)",
+                    name: "Хирургическое лечение",
+                    rec: "Консервативная терапия в качестве основного метода нецелесообразна. Рекомендовано хирургическое лечение в плановом порядке. При поражении кишечника — мультидисциплинарная предоперационная подготовка." }
+            ) : null;
 
-  <!-- Footer -->
-  <div class="footer">
-    <strong>Важно:</strong> Калькулятор является вспомогательным инструментом клинической поддержки принятия решений. Окончательное решение о тактике лечения принимается лечащим врачом с учётом всей совокупности клинических данных. Шкала разработана на основании данных когортного исследования (n=139) и валидирована на тестовой выборке (n=41, точность 80,5%).
-  </div>
+            // Объект стилей S (полностью из исходного кода)
+            const S = {
+                wrap: { background: "#0d0f1a", minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", color: "#e2e4f0", paddingBottom: 60 },
+                header: { background: "linear-gradient(180deg,#0f1120,#0d0f1a)", borderBottom: "1px solid #252840", padding: "32px 20px 24px", textAlign: "center" },
+                badge: { display: "inline-block", background: "rgba(108,99,255,.12)", border: "1px solid rgba(108,99,255,.3)", color: "#a78bfa", fontSize: 11, letterSpacing: ".08em", textTransform: "uppercase", padding: "4px 14px", borderRadius: 20, marginBottom: 16 },
+                h1: { fontSize: "clamp(22px,5vw,36px)", fontWeight: 700, color: "#e2e4f0", lineHeight: 1.2 },
+                h1span: { color: "#6c63ff" },
+                sub: { color: "#6b7090", fontSize: 13, marginTop: 6 },
+                formulaBar: { display: "inline-block", marginTop: 16, background: "#141622", border: "1px solid #252840", borderRadius: 8, padding: "9px 18px", fontFamily: "monospace", fontSize: 12, color: "#6b7090" },
+                fkey: { color: "#a78bfa", fontWeight: 600 },
+                main: { maxWidth: 700, margin: "0 auto", padding: "0 16px" },
+                secLabel: { display: "flex", alignItems: "center", gap: 8, margin: "28px 0 10px", fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "#6b7090" },
+                secLine: { flex: 1, height: 1, background: "#252840" },
+                secNum: { background: "#1e2235", border: "1px solid #2a3050", color: "#6c63ff", padding: "2px 8px", borderRadius: 4, fontSize: 10, flexShrink: 0 },
+                card: { background: "#1a1d2e", border: "1px solid #252840", borderRadius: 12, padding: "20px 18px", marginBottom: 12 },
+                cardTitle: { fontSize: 16, fontWeight: 600, color: "#e2e4f0", marginBottom: 16 },
+                ageRow: { display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" },
+                ageInp: { background: "#141622", border: "1px solid #2a3050", borderRadius: 8, color: "#e2e4f0", fontFamily: "monospace", fontSize: 24, padding: "8px 14px", width: 100, textAlign: "center", outline: "none" },
+                ageLbl: { color: "#6b7090", fontSize: 14 },
+                optWrap: { display: "flex", flexDirection: "column", gap: 7 },
+                opt: (sel) => ({
+                    display: "flex", alignItems: "center", gap: 14,
+                    padding: "12px 16px",
+                    background: sel ? "rgba(108,99,255,.14)" : "#141622",
+                    border: `1px solid ${sel ? "#6c63ff" : "#252840"}`,
+                    borderRadius: 10, cursor: "pointer",
+                    transition: "all .12s", userSelect: "none",
+                    WebkitTapHighlightColor: "transparent",
+                }),
+                optCode: (sel) => ({
+                    minWidth: 22, height: 22, borderRadius: 6,
+                    background: sel ? "#6c63ff" : "#1e2235",
+                    border: `1px solid ${sel ? "#6c63ff" : "#2a3050"}`,
+                    color: sel ? "#fff" : "#6c63ff",
+                    fontSize: 11, fontWeight: 700, display: "flex",
+                    alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }),
+                optText: (sel) => ({ fontSize: 13, color: sel ? "#e2e4f0" : "#8090b0", flex: 1, lineHeight: 1.4 }),
+                optDot: (sel) => ({
+                    width: 8, height: 8, borderRadius: "50%",
+                    background: sel ? "#6c63ff" : "transparent",
+                    border: `1.5px solid ${sel ? "#6c63ff" : "#3a4060"}`,
+                    flexShrink: 0, transition: "all .12s",
+                }),
+                painGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 8 },
+                painItem: (sel) => ({
+                    display: "flex", alignItems: "center", gap: 9,
+                    background: sel ? "rgba(108,99,255,.12)" : "#141622",
+                    border: `1px solid ${sel ? "#6c63ff" : "#252840"}`,
+                    borderRadius: 9, padding: "11px 13px", cursor: "pointer",
+                    userSelect: "none", WebkitTapHighlightColor: "transparent",
+                    transition: "all .12s",
+                }),
+                painBox: (sel) => ({
+                    width: 20, height: 20, borderRadius: 5,
+                    border: `2px solid ${sel ? "#6c63ff" : "#2a3050"}`,
+                    background: sel ? "#6c63ff" : "transparent",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 12, fontWeight: 700, color: "#fff", flexShrink: 0,
+                }),
+                painTxt: (sel) => ({ fontSize: 13, color: sel ? "#e2e4f0" : "#6b7090" }),
+                painCounter: { marginTop: 10, fontSize: 13, color: "#6b7090", fontFamily: "monospace" },
+                calcBtn: { width: "100%", padding: "16px", background: "linear-gradient(135deg,#6c63ff,#8b5cf6)", border: "none", borderRadius: 12, color: "#fff", fontSize: 16, fontWeight: 700, cursor: "pointer", marginTop: 8, letterSpacing: ".02em", WebkitTapHighlightColor: "transparent" },
+                errBox: { background: "rgba(248,113,113,.1)", border: "1px solid rgba(248,113,113,.3)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#f87171", marginTop: 10 },
+                resultWrap: (zd) => ({ background: zd.bg, border: `1px solid ${zd.border}`, borderRadius: 14, padding: "24px 20px", marginTop: 24 }),
+                resZoneLabel: (zd) => ({ fontSize: 13, fontWeight: 700, color: zd.color, letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 10 }),
+                resScore: (zd) => ({ fontFamily: "monospace", fontSize: 64, fontWeight: 800, color: zd.color, lineHeight: 1 }),
+                resScoreLbl: { fontSize: 12, color: "#6b7090", letterSpacing: ".1em", textTransform: "uppercase", marginTop: 2 },
+                resDivider: { height: 1, background: "rgba(255,255,255,.07)", margin: "18px 0" },
+                resZoneName: { fontSize: 20, fontWeight: 700, color: "#e2e4f0", marginBottom: 10 },
+                resRec: { fontSize: 13, color: "#9099b8", lineHeight: 1.65 },
+                summaryGrid: { display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginTop: 18 },
+                summaryItem: { background: "rgba(0,0,0,.2)", borderRadius: 8, padding: "10px 12px" },
+                summaryKey: { fontSize: 10, color: "#6b7090", textTransform: "uppercase", letterSpacing: ".06em", display: "block", marginBottom: 3 },
+                summaryVal: { fontSize: 15, fontWeight: 700, color: "#e2e4f0", fontFamily: "monospace" },
+                bdownWrap: { marginTop: 16, background: "rgba(0,0,0,.2)", borderRadius: 10, padding: "14px 16px" },
+                bdownTitle: { fontSize: 10, color: "#6b7090", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 },
+                brow: { display: "flex", justifyContent: "space-between", padding: "3px 0", fontFamily: "monospace", fontSize: 12, borderBottom: "1px dashed rgba(255,255,255,.05)" },
+                bname: { color: "#6b7090" },
+                bval: (v) => ({ fontWeight: 600, color: v > 0 ? "#34d399" : v < 0 ? "#f87171" : "#6b7090" }),
+                btotRow: { display: "flex", justifyContent: "space-between", marginTop: 8, fontFamily: "monospace", fontSize: 15, fontWeight: 800 },
+                filterBox: { marginTop: 14, background: "rgba(248,113,113,.08)", border: "1px solid rgba(248,113,113,.25)", borderRadius: 8, padding: "12px 14px" },
+                filterTitle: { fontSize: 12, fontWeight: 700, color: "#f87171", marginBottom: 6 },
+                filterItem: { fontSize: 12, color: "#f5a0a0", lineHeight: 1.7 },
+                filterNote: { fontSize: 11, color: "#d08080", marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(248,113,113,.2)", lineHeight: 1.5 },
+                resetBtn: { width: "100%", marginTop: 14, background: "transparent", border: "1px solid #252840", color: "#6b7090", fontSize: 14, padding: "11px", borderRadius: 10, cursor: "pointer", WebkitTapHighlightColor: "transparent" },
+                footer: { maxWidth: 700, margin: "32px auto 0", padding: "0 16px", fontSize: 12, color: "#4a5070", lineHeight: 1.65, borderTop: "1px solid #1a1d2e", paddingTop: 20 },
+            };
 
-</div>
+            const terms = result ? [
+                { label: "Константа", val: -24 },
+                { label: `8 × Sum_Ovary (${result.vals.ovary})`, val: 8 * result.vals.ovary },
+                { label: `39 × Sum_OT (${result.vals.tubes})`, val: 39 * result.vals.tubes },
+                { label: `−1 × Age (${result.age})`, val: -result.age },
+                { label: `15 × Боль (${result.pain})`, val: 15 * result.pain },
+                { label: `17 × Retrosigmoid (${result.vals.rectosigmoid})`, val: 17 * result.vals.rectosigmoid },
+                { label: `11 × Pelvis (${result.vals.pelvis})`, val: 11 * result.vals.pelvis },
+            ] : [];
 
-<script>
-  var vals = { ovary: null, tubes: null, rectosigmoid: null, pelvis: null };
+            const summaryItems = result ? [
+                { key: "Возраст", val: result.age + " л" },
+                { key: "Sum_Ovary", val: result.vals.ovary },
+                { key: "Sum_OT", val: result.vals.tubes },
+                { key: "Боль", val: result.pain + "/5" },
+                { key: "Retrosigmoid", val: result.vals.rectosigmoid },
+                { key: "Pelvis", val: result.vals.pelvis },
+            ] : [];
 
-  // OPTION BUTTONS — click on any child still works via closest()
-  document.addEventListener('click', function(e) {
-    var opt = e.target.closest('.option[data-group]');
-    if (!opt) return;
-    var g = opt.getAttribute('data-group');
-    var v = parseInt(opt.getAttribute('data-val'), 10);
-    var siblings = document.querySelectorAll('.option[data-group="' + g + '"]');
-    for (var i = 0; i < siblings.length; i++) siblings[i].classList.remove('selected');
-    opt.classList.add('selected');
-    vals[g] = v;
-  });
+            return (
+                <div style={S.wrap}>
+                    <style>{css}</style>
+                    <div style={S.header}>
+                        <div style={S.badge}>◈ НМИЦ АГП им. В.И. Кулакова · НГЭ</div>
+                        <h1 style={S.h1}>Шкала <span style={S.h1span}>SCORE</span></h1>
+                        <p style={S.sub}>Стратификация хирургического риска при наружном генитальном эндометриозе</p>
+                        <div style={S.formulaBar}>
+                            <span style={S.fkey}>SCORE</span>{" = −24 + 8·OV + 39·OT − 1·Age + 15·Pain + 17·RS + 11·PV"}
+                        </div>
+                    </div>
+                    <div style={S.main}>
+                        {/* Возраст */}
+                        <div style={S.secLabel}><span style={S.secNum}>01</span>Возраст пациентки<div style={S.secLine}/></div>
+                        <div style={S.card}>
+                            <div style={S.cardTitle}>Возраст</div>
+                            <div style={S.ageRow}>
+                                <input style={S.ageInp} type="number" min="18" max="60" placeholder="35"
+                                    value={age} onChange={e => setAge(e.target.value)} />
+                                <span style={S.ageLbl}>от 18 до 60 лет</span>
+                            </div>
+                        </div>
 
-  // PAIN CHECKBOXES — click anywhere on item
-  document.addEventListener('click', function(e) {
-    var item = e.target.closest('#pain-grid .pain-item');
-    if (!item) return;
-    item.classList.toggle('checked');
-    var count = document.querySelectorAll('#pain-grid .pain-item.checked').length;
-    document.getElementById('pain-count').textContent = count;
-  });
+                        {/* Группы опций */}
+                        {Object.entries(GROUPS).map(([key, grp]) => (
+                            <div key={key}>
+                                <div style={S.secLabel}><span style={S.secNum}>{grp.num}</span>{grp.title}<div style={S.secLine}/></div>
+                                <div style={S.card}>
+                                    <div style={S.optWrap}>
+                                        {grp.options.map(opt => {
+                                            const sel = selected[key] === opt.val;
+                                            return (
+                                                <div key={opt.val} style={S.opt(sel)} onClick={() => select(key, opt.val)}>
+                                                    <div style={S.optCode(sel)}>{opt.val}</div>
+                                                    <span style={S.optText(sel)}>{opt.label}</span>
+                                                    <div style={S.optDot(sel)} />
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
 
-  function getPain() {
-    return document.querySelectorAll('#pain-grid .pain-item.checked').length;
-  }
+                        {/* Боль */}
+                        <div style={S.secLabel}><span style={S.secNum}>04</span>Болевой синдром (Pain_quantitative)<div style={S.secLine}/></div>
+                        <div style={S.card}>
+                            <div style={S.cardTitle}>Отметьте все имеющиеся симптомы</div>
+                            <div style={S.painGrid}>
+                                {PAIN_LABELS.map((lbl, i) => (
+                                    <div key={i} style={S.painItem(pain[i])} onClick={() => togglePain(i)}>
+                                        <div style={S.painBox(pain[i])}>{pain[i] ? "✓" : ""}</div>
+                                        <span style={S.painTxt(pain[i])}>{lbl}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div style={S.painCounter}>Выбрано симптомов: {painCount} из 5</div>
+                        </div>
 
-  function calculate() {
-    const age = parseInt(document.getElementById('age').value);
+                        {/* Ошибка */}
+                        {error && <div style={S.errBox}>⚠ {error}</div>}
 
-    // Validation
-    if (!age || age < 18 || age > 60) {
-      alert('Укажите корректный возраст (18–60 лет)');
-      return;
-    }
-    if (vals.ovary === null) { alert('Выберите вариант для яичников'); return; }
-    if (vals.tubes === null) { alert('Выберите вариант для маточных труб'); return; }
-    if (vals.rectosigmoid === null) { alert('Выберите вариант для ректосигмоидного отдела'); return; }
-    if (vals.pelvis === null) { alert('Выберите вариант для стенок таза'); return; }
+                        {/* Кнопка расчёта */}
+                        {!result && (
+                            <button style={S.calcBtn} onClick={calculate}>
+                                Рассчитать SCORE →
+                            </button>
+                        )}
 
-    const pain = getPain();
+                        {/* Результат */}
+                        {result && zoneData && (
+                            <div style={S.resultWrap(zoneData)}>
+                                <div style={S.resZoneLabel(zoneData)}>{zoneData.label}</div>
+                                <div style={S.resScore(zoneData)}>{fmt(result.score)}</div>
+                                <div style={S.resScoreLbl}>SCORE</div>
+                                <div style={S.resDivider} />
+                                <div style={S.resZoneName}>{zoneData.name}</div>
+                                <div style={S.resRec}>{zoneData.rec}</div>
 
-    const score = -24
-      + 8  * vals.ovary
-      + 39 * vals.tubes
-      + (-1) * age
-      + 15 * pain
-      + 17 * vals.rectosigmoid
-      + 11 * vals.pelvis;
+                                <div style={S.summaryGrid}>
+                                    {summaryItems.map(it => (
+                                        <div key={it.key} style={S.summaryItem}>
+                                            <span style={S.summaryKey}>{it.key}</span>
+                                            <span style={S.summaryVal}>{it.val}</span>
+                                        </div>
+                                    ))}
+                                </div>
 
-    // Zone
-    let zoneClass, zoneLabel, zoneName, recommendation;
+                                <div style={S.bdownWrap}>
+                                    <div style={S.bdownTitle}>Расчёт формулы</div>
+                                    {terms.map((t, i) => (
+                                        <div key={i} style={S.brow}>
+                                            <span style={S.bname}>{t.label}</span>
+                                            <span style={S.bval(t.val)}>{fmt(t.val)}</span>
+                                        </div>
+                                    ))}
+                                    <div style={S.btotRow}>
+                                        <span style={{ color: "#6b7090" }}>SCORE</span>
+                                        <span style={{ color: zoneData.color }}>{fmt(result.score)}</span>
+                                    </div>
+                                </div>
 
-    if (score < 0) {
-      zoneClass = 'zone1';
-      zoneLabel = 'ЗОНА I — НИЗКИЙ РИСК';
-      zoneName = 'Консервативная терапия';
-      recommendation = 'Рекомендована гормональная терапия прогестагенами. Динамическое МРТ-наблюдение через 6 месяцев. При нарастании симптоматики или росте очагов — пересмотр тактики.';
-    } else if (score <= 15) {
-      zoneClass = 'zone2';
-      zoneLabel = 'ЗОНА II — СРЕДНИЙ РИСК';
-      zoneName = 'Индивидуальное решение';
-      recommendation = 'Тактика определяется индивидуально. Необходимо учитывать показатели овариального резерва (АМГ, АФЧ), репродуктивные планы пациентки и динамику симптомов. Пробная консервативная терапия 3–6 месяцев с повторной оценкой.';
-    } else {
-      zoneClass = 'zone3';
-      zoneLabel = 'ЗОНА III — ВЫСОКИЙ РИСК';
-      zoneName = 'Хирургическое лечение';
-      recommendation = 'Консервативная терапия в качестве основного метода нецелесообразна. Рекомендовано хирургическое лечение в плановом порядке. При поражении кишечника — мультидисциплинарная предоперационная подготовка.';
-    }
+                                {result.filters.length > 0 && (
+                                    <div style={S.filterBox}>
+                                        <div style={S.filterTitle}>⚠ Абсолютные показания к операции</div>
+                                        {result.filters.map((f, i) => (
+                                            <div key={i} style={S.filterItem}>→ {f}</div>
+                                        ))}
+                                        <div style={S.filterNote}>
+                                            Консультация хирурга и оперативное лечение необходимы вне зависимости от значения SCORE
+                                        </div>
+                                    </div>
+                                )}
 
-    // Filters
-    const filters = [];
-    if (vals.ovary === 3) filters.push('Односторонняя эндометриома > 5 см');
-    if (vals.ovary === 5) filters.push('Двусторонние эндометриомы ≥ 3 см');
-    if (vals.rectosigmoid >= 2) filters.push('Инвазия стенки кишки (Retrosigmoid ≥ 2)');
+                                <button style={S.resetBtn} onClick={reset}>↺ Новый расчёт</button>
+                            </div>
+                        )}
 
-    // Render
-    const card = document.getElementById('result-card');
-    card.className = 'result-card ' + zoneClass;
-    document.getElementById('result-zone-label').textContent = zoneLabel;
-    document.getElementById('result-score').textContent = (score >= 0 ? '+' : '') + score;
-    document.getElementById('result-zone-name').textContent = zoneName;
-    document.getElementById('result-recommendation').textContent = recommendation;
+                        {/* Футер */}
+                        <div style={S.footer}>
+                            <strong style={{ color: "#6c63ff" }}>Важно:</strong> Калькулятор является вспомогательным инструментом клинической поддержки принятия решений. Окончательное решение о тактике лечения принимается лечащим врачом. Шкала разработана на основании данных когортного исследования (n=139) и валидирована на тестовой выборке (n=41, точность 80,5%).
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-    // Summary
-    const summaryData = [
-      { key: 'Возраст', val: age + ' лет' },
-      { key: 'Sum_Ovary', val: vals.ovary },
-      { key: 'Sum_OT', val: vals.tubes },
-      { key: 'Боль', val: pain + ' симпт.' },
-      { key: 'Retrosigmoid', val: vals.rectosigmoid },
-      { key: 'Pelvis', val: vals.pelvis },
-    ];
-    document.getElementById('summary-grid').innerHTML = summaryData.map(d =>
-      `<div class="summary-item"><span class="summary-key">${d.key}</span><span class="summary-val">${d.val}</span></div>`
-    ).join('');
-
-    // Formula breakdown
-    const terms = [
-      { label: 'Константа', val: -24 },
-      { label: `8 × Sum_Ovary (${vals.ovary})`, val: 8 * vals.ovary },
-      { label: `39 × Sum_OT (${vals.tubes})`, val: 39 * vals.tubes },
-      { label: `−1 × Age (${age})`, val: -age },
-      { label: `15 × Боль (${pain})`, val: 15 * pain },
-      { label: `17 × Retrosigmoid (${vals.rectosigmoid})`, val: 17 * vals.rectosigmoid },
-      { label: `11 × Pelvis (${vals.pelvis})`, val: 11 * vals.pelvis },
-    ];
-    document.getElementById('formula-breakdown').innerHTML =
-      terms.map(t => `<div class="formula-line"><span>${t.label}</span><span class="formula-val ${t.val < 0 ? 'negative' : ''}">${t.val >= 0 ? '+' : ''}${t.val}</span></div>`).join('') +
-      `<div class="formula-line total"><span>SCORE</span><span class="formula-val">${score >= 0 ? '+' : ''}${score}</span></div>`;
-
-    // Filter warning
-    const fw = document.getElementById('filter-warning');
-    if (filters.length > 0) {
-      fw.style.display = 'block';
-      document.getElementById('filter-warning-text').textContent =
-        'Выявлены показания к операции вне зависимости от SCORE: ' + filters.join('; ') + '.';
-    } else {
-      fw.style.display = 'none';
-    }
-
-    // Show result
-    const resultEl = document.getElementById('result');
-    resultEl.classList.add('visible');
-    setTimeout(() => resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-  }
-
-  function resetForm() {
-    document.getElementById('age').value = '';
-    var allOpts = document.querySelectorAll('.option[data-group]');
-    for (var i = 0; i < allOpts.length; i++) allOpts[i].classList.remove('selected');
-    var allPain = document.querySelectorAll('.pain-item');
-    for (var j = 0; j < allPain.length; j++) allPain[j].classList.remove('checked');
-    document.getElementById('pain-count').textContent = '0';
-    vals = { ovary: null, tubes: null, rectosigmoid: null, pelvis: null };
-    document.getElementById('result').classList.remove('visible');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // Wire up buttons (no onclick in HTML — works on iOS)
-  document.getElementById('calcBtn').addEventListener('click', calculate);
-  document.getElementById('resetBtn').addEventListener('click', resetForm);
-</script>
+        // Рендеринг приложения
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
